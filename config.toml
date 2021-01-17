@@ -1,4 +1,16 @@
 baseURL = "https://www.VendingMachineAPI.com/"
 languageCode = "en-us"
 title = "Vending Machine API"
-theme = "beautifulhugo" 
+theme = "beautifulhugo"  
+
+
+
+[[menu.main]]
+    name = "Vending Machine API"
+    url = "/"
+    weight = 1
+
+[[menu.main]]
+    name = "About"
+    url = "https://www.vendingontrack.com/"
+    weight = 2

@@ -52,8 +52,10 @@
         </p>
         <!-- Please don't remove this, keep my open source work credited :) -->
         <p class="credits theme-by text-muted">
-          {{ i18n "poweredBy" . | safeHTML }}
-          {{ if $.GitInfo }}&nbsp;&bull;&nbsp;[<a href="{{ .Site.Params.commit }}{{ .GitInfo.Hash }}">{{ substr .GitInfo.Hash 0 8 }}</a>]{{ end }}
+          <a href="https://www.vendingontrack.com">Vending on Track</a> |
+          <a href="https://www.VendingMachineAPI.com">Vending Machine API</a>
+          <hr />
+          {{ if $.GitInfo }}&nbsp;&bull;&nbsp;[{{ .GitInfo.Hash }}] {{ end }}
         </p>
       </div>
     </div>
