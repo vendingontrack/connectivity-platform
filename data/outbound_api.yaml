@@ -1,0 +1,327 @@
+openapi: 3.0.1
+info:
+  title: Vending Machine API Document (Call back) - Connectivity Platform - Vending on Track
+  description: Vending Machine API Document (Call back) - Vending on Track. This API is provided by Vending on Track to 3rd party for connectivity platform integration.
+  contact:
+    email: connectivity-developer@vendingontrack.com
+  version: "2.3"
+servers:
+- url: https://3rdparty.connectivityPlatformIntegration.com/
+security:
+  - ApiKeyAuth: []
+  - BasicAuth: []
+paths:
+  /txn/request:
+    post:
+      tags:
+      - payment callback API
+      summary: Notify payment integration that the customer has made a selection
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SelectionNotification'
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CallbackResponse'
+      deprecated: false
+      x-codegen-request-body-name: SelectionNotification
+  /txn/unlock:
+    post:
+      tags:
+      - payment callback API
+      summary: Vending machine decides unlock/abort the transaction. This is used
+        when a transaction was terminated during a transaction.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UnlockNotification'
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CallbackResponse'
+      deprecated: false
+      x-codegen-request-body-name: UnlockNotification
+  /txn/vend:
+    post:
+      tags:
+      - payment callback API
+      summary: Notify payment integration the result of a vend/transaction
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VendResultNotification'
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CallbackResponse'
+      deprecated: false
+      x-codegen-request-body-name: VendResultNotification
+  /feed/transactions:
+    post:
+      tags:
+      - data feed callback API
+      summary: Notify the third party platform that vending machine has dispensed
+        products, this also includes transactions approved by 3rd party integration
+        via payment API.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionNotification'
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CallbackResponse'
+      deprecated: false
+      x-codegen-request-body-name: TransactionNotification
+  /feed/refills:
+    post:
+      tags:
+      - data feed callback API
+      summary: Notify the third party platform that vending machine has been refilled
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefillNotification'
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CallbackResponse'
+      deprecated: false
+      x-codegen-request-body-name: RefillNotification
+  /feed/alerts:
+    post:
+      tags:
+      - data feed callback API
+      summary: Send a vending machine alert to the third party platform
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AlertNotification'
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CallbackResponse'
+      deprecated: false
+      x-codegen-request-body-name: AlertNotification
+  /feed/button_actions:
+    post:
+      tags:
+      - data feed callback API
+      summary: Notify the third party platform that a button on the telemetry box
+        has been clicked
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ButtonActionNotification'
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CallbackResponse'
+      deprecated: false
+      x-codegen-request-body-name: ButtonActionNotification
+components:
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+  schemas:
+    SelectionNotification:
+      title: SelectionNotification
+      type: object
+      properties:
+        txn_ref:
+          type: string
+          description: transaction reference
+        new_txn_ref:
+          type: string
+          description: If not empty, payment integration needs to replace id of the
+            ongoing transaction(txn_ref) with this new id
+        selection:
+          type: string
+          description: item number of the selection
+        cents:
+          type: integer
+          description: price of the selected item - it is minimal currency unit (1 JPY for Japan, or $0.01 for USD)
+    UnlockNotification:
+      title: UnlockNotification
+      type: object
+      properties:
+        txn_ref:
+          type: string
+          description: "transaction identity. Please note: this txn_ref can be used to search vending machine id"
+        code:
+          type: string
+          description: reason for cancellation
+    VendResultNotification:
+      title: VendResultNotification
+      type: object
+      properties:
+        txn_ref:
+          type: string
+          description: transaction id
+        code:
+          type: string
+          description: Short code to indicate the reason of failure. It can be null or empty for successful vend
+        success:
+          type: boolean
+          description: true for successful transaction
+    TransactionNotification:
+      title: TransactionNotification
+      type: object
+      properties:
+        vm_id:
+          type: string
+          description: The identity of a vending machine
+        dispense_quantity:
+          type: integer
+          description: Number of items dispensed in a transaction
+        time:
+          type: integer
+          description: the unix timestamp of the transaction
+        cash_value:
+          type: integer
+          description: the transaction cash value in cents
+        cashless_value:
+          type: integer
+          description: the transaction cashless value in cents
+        code:
+          type: integer
+          description: The raw mdb code of a coil
+        planogram:
+          type: array
+          items:
+            $ref: '#/components/schemas/Coil'
+    RefillNotification:
+      type: object
+      properties:
+        vm_id:
+          type: string
+          description: The identity of a vending machine
+        time:
+          type: integer
+          description: the unix timestamp of the refill
+        refill_detail:
+          type: array
+          items:
+            type: object
+            properties:
+              refill_quantity:
+                type: integer
+                description: the refill quantity for a coil
+              code:
+                type: integer
+                description: The raw mdb code of a coil
+        planogram:
+          type: array
+          items:
+            $ref: '#/components/schemas/Coil'
+    Coil:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: The raw mdb code of this coil. It's the identity for this coil. It's unique across the vending machine
+        formatted_code:
+          type: string
+          description: The formatted mdb code of this coil
+        name:
+          type: string
+          description: The product name of this coil
+        price:
+          type: integer
+          description: The item price of this coil in cents (minimal currency unit)
+        placeholder:
+          type: boolean
+          description: Whether the product name is autogenerated or has been updated manually
+        capacity:
+          type: integer
+          description: The capacity of a coil
+        restock_count:
+          type: integer
+          description: The desired stock level of a coil (parlevel)
+        current_stock:
+          type: integer
+          description: "the current stock level of this coil after the transaction. Please note: if this number is below 0, it's passed in as 0"
+    AlertNotification:
+      type: object
+      properties:
+        vm_id:
+          type: string
+          description: The identity of a vending machine
+        time:
+          type: integer
+          description: the unix timestamp of the alert
+        message:
+          type: string
+          description: the content of the alert
+        level:
+          type: string
+          description: the level of alert, possible value is Low, Medium, High
+    ButtonActionNotification:
+      type: object
+      properties:
+        vm_id:
+          type: string
+          description: The identity of a vending machine
+        time:
+          type: integer
+          description: the unix timestamp of the button click event
+        button:
+          type: integer
+          description: the button number, possible value is 1, 2, 3
+    CallbackResponse:
+      title: CallbackResponse
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/StandardResponse'
+    StandardResponse:
+      type: object
+      required:
+        - message
+        - success
+      properties:
+        message:
+          type: string
+          description: error message. It can be null if success is true
+        success:
+          type: boolean

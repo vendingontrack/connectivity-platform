@@ -1,0 +1,4 @@
+baseURL = "https://www.VendingMachineAPI.com/"
+languageCode = "en-us"
+title = "Vending Machine API"
+theme = "beautifulhugo" 

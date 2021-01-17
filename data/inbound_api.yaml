@@ -1,0 +1,373 @@
+openapi: 3.0.1
+info:
+  title: Vending Machine API Document - Connectivity Platform - Vending on Track
+  description: Vending Machine API Document - Vending on Track. This API is provided by Vending on Track to 3rd party for connectivity platform integration.
+  contact:
+    email: connectivity-developer@vendingontrack.com
+  version: "2.3"
+servers:
+- url: "https://api.connectivity.REGION.vendingontrack.com/connectivity-platform"
+security:
+  - ApiKeyAuth: []
+  - BasicAuth: []
+paths:
+  /api/lock:
+    post:
+      tags:
+      - payment endpoint
+      summary: Start a transaction by locking a vending machine.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LockRequest'
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LockResponse'
+      deprecated: false
+      x-codegen-request-body-name: lockRequest
+  /api/paid:
+    post:
+      tags:
+      - payment endpoint
+      summary: Mark an ongoing transaction as paid. The transaction must be authorized
+        by caller.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionPaidRequest'
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionPaidResponse'
+      deprecated: false
+      x-codegen-request-body-name: paidRequest
+  /api/unlock:
+    post:
+      tags:
+      - payment endpoint
+      summary: Cancel an ongoing transaction before authorizing payment. No side effect
+        if called after payment for the transaction has been made (/api/paid).
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelRequest'
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CancelResponse'
+      deprecated: false
+      x-codegen-request-body-name: unlockRequest
+  /api/vmc_bulk_search:
+    post:
+      tags:
+      - payment endpoint
+      summary: Obtain detailed information(vending machine status, operator information and
+        virtual keypad configuration) for multiple vending machines.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkSearchRequest'
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkSearchResponse'
+      deprecated: false
+      x-codegen-request-body-name: bulkSearchRequest
+  /api/vmc_search:
+    post:
+      tags:
+      - payment endpoint
+      summary: Obtain detailed information(vending machine status, company info and
+        virtual keypad configuration) for a single vending machine.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchRequest'
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResponse'
+      deprecated: false
+      x-codegen-request-body-name: vmcSearchRequest
+  /api/vmc_user_keys:
+    post:
+      tags:
+      - payment endpoint
+      summary: After customer made selection on virtual keypad, notify vending machine about the inputs.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserKeysRequest'
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserKeysResponse'
+      deprecated: false
+      x-codegen-request-body-name: UserKeysRequest
+components:
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+  schemas:
+    StandardResponse:
+      title: Standard Response 
+      type: object
+      properties:
+        message:
+          type: string
+          description: Error message. It can be null or empty for successful response 
+        success:
+          type: boolean
+    LockRequest:
+      title: LockRequest
+      type: object
+      properties:
+        balance:
+          type: integer
+          description: current account balance. Some vending machine would display
+            this number on the display. It can be 65535 for unknown value.
+          format: int64
+        id:
+          type: string
+          description: vending machine id. Use vm_id for newer application.
+        vm_id:
+          type: string
+          description: identity of vending machine. This is now the preferred.
+        txnRef:
+          type: string
+          description: transaction id
+    LockResponse:
+      title: LockResponse
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/StandardResponse'
+        - type: 'object'
+          properties:
+            timeout:
+              type: integer
+              description: "How long would this vending machine be locked - in seconds. Note: vending machine may decided to unlock the transaction earlier than this timeout"
+              format: int64
+    TransactionPaidRequest:
+      title: TransactionPaidRequest
+      type: object
+      properties:
+        discount:
+          type: integer
+          description: discount amount(in cents or minimal currency unit) of the transaction
+          format: int64
+        price:
+          type: integer
+          description: original price(in cents or minimal currency unit, before surcharge and discount) of
+            the transaction
+          format: int64
+        surcharge:
+          type: integer
+          description: surcharge amount(in cents) of the transaction
+          format: int64
+        txnRef:
+          type: string
+          description: transaction id
+    TransactionPaidResponse:
+      title: TransactionPaidResponse
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/StandardResponse'
+       
+    CancelRequest:
+      title: CancelRequest
+      type: object
+      properties:
+        id:
+          type: string
+          description: vending machine id. Switch to vm_id for newer application
+        vm_id:
+          type: string
+          description: identity of vending machine. This is now the preferred.
+        txnRef:
+          type: string
+          description: identity of the transaction
+    CancelResponse:
+      title: CancelResponse
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/StandardResponse'
+        
+      
+    BulkSearchResponse:
+      title: BulkSearchVmcResponse
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/StandardResponse'
+        - type: 'object'
+          properties:
+            vendingMachines:
+              type: array
+              items:
+                $ref: '#/components/schemas/VendingMachine'
+    BulkSearchRequest:
+      title: BulkSearchRequest
+      type: object
+      properties:
+        vms:
+          type: array
+          items:
+            type: string
+            description: array of vending machine ids
+    SearchRequest:
+      title: SearchRequest
+      type: object
+      properties:
+        vm_id:
+          type: string
+          description: vending machine id
+    SearchResponse:
+      title: SearchVmcResponse
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/StandardResponse'
+        - type: 'object'
+          properties:
+            vendingMachine:
+              $ref: '#/components/schemas/VendingMachine'
+    UserKeysRequest:
+      title: UserKeysRequest
+      type: object
+      properties:
+        keys:
+          type: array
+          items:
+            type: integer
+            description: array of keypad item index
+            format: int64
+        txnRef:
+          type: string
+          description: transaction id
+        vm_id:
+          type: string
+          description: vending machine id
+    UserKeysResponse:
+      title: UserKeysResponse
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/StandardResponse'
+      
+    VendingMachine:
+      title: VendingMachine
+      type: object
+      properties:
+        address:
+          type: string
+          description: vending machine location
+        business_address:
+          type: string
+          description: business address
+        busy:
+          type: boolean
+          description: whether there is a ongoing transaction
+        company_external_name:
+          type: string
+          description: business name of the merchant
+        id:
+          type: string
+          description: vending machine id
+        keypad_configuration:
+          $ref: '#/components/schemas/KeypadConfiguration'
+        online:
+          type: boolean
+          description: whether the vending machine is online
+        operator_contact_number:
+          type: string
+        operator_name:
+          type: string
+        photo_url:
+          type: string
+          description: the URL for the vending machine photo
+    KeypadConfiguration:
+      title: KeypadConfiguration
+      type: object
+      properties:
+        keypad_items:
+          type: array
+          items:
+            $ref: '#/components/schemas/KeypadItem'
+        total_action_needed:
+          type: integer
+          description: total number of keys required on keypad to make selection
+          format: int32
+        total_column_number:
+          type: integer
+          description: total column number of the keypad
+          format: int32
+        total_row_number:
+          type: integer
+          description: total row number of the keypad
+          format: int32
+        virtual_keypad_enabled:
+          type: boolean
+          description: whether virtual keypad feature is enabled on this vending machine
+    KeypadItem:
+      title: KeypadItem
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        display_value:
+          type: string
+          description: text displayed on this key
+        h:
+          type: integer
+          description: number of rows this keypad item will occupy on the virtual
+            keypad
+          format: int32
+        w:
+          type: integer
+          description: number of columns this keypad item will occupy on the virtual
+            keypad
+          format: int32
+        x:
+          type: integer
+          description: x-coordinate of top left point of this keypad item(starting
+            from 0)
+          format: int32
+        y:
+          type: integer
+          description: y-coordinate of top left point of this keypad item(starting
+            from 0)
+          format: int32
