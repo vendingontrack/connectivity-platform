@@ -51,6 +51,6 @@ For detailed information, please refer to
 * [Outbound API](/api/outbound_api.yaml) - 3rd party needs to implement this API for Connectivity Platform
 
 Generated documents can be found here
-* [Inbound API - generated HTML document](/api/inbound_api.yaml)
-* [Outbound API - generated HTML document](/api/outbound_api.yaml)
+* [Inbound API - generated HTML document](/api/inbound_api.html)
+* [Outbound API - generated HTML document](/api/outbound_api.html)
 
