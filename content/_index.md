@@ -36,6 +36,7 @@ The basic integration can be summaries by following chart,
 ![Sample Flow](/image/sample-flow.png)
 
 These 7 steps will finish a basic transaction,
+
 1. 3rd party starts the transaction by locking Connectivity Platform vending machine `/api/lock`
 2. customer makes selection on vending machine
 3. Connectivity Platform notifies 3rd party the selection by calling `/txn/request`
@@ -46,11 +47,14 @@ These 7 steps will finish a basic transaction,
 
 ----
 
-For detailed information, please refer to 
+For detailed information, please refer to
+
 * [Inbound API](/api/inbound_api.yaml) - Vending Machine API provided to 3rd party
 * [Outbound API](/api/outbound_api.yaml) - 3rd party needs to implement this API for Connectivity Platform
 
-Generated documents can be found here
+
+Generated documents can be found here,
+
 * [Inbound API - generated HTML document](/api/inbound_api.html)
 * [Outbound API - generated HTML document](/api/outbound_api.html)
 
