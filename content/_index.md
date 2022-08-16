@@ -22,11 +22,39 @@ It opens doors for software developers to the  amazing world of IoT for vending 
 
 
 Some use cases include,
+
 * Coffee machine operators can easily integrate this technology to make operation more transparent and efficient while offering a branded experience for clients;
 * Gyms can provide hydration and energy products to customers and encourage gym use;
 * Construction and safety businesses can do monitored and controlled dispensing of PPE vending products with integrated safety mobile app technology;
 * Digital wallets and payment gateways can connect to Vending on Track’s Connectivity Platform to increase their usage and popularity;
 * The Buy-Now-Pay-Later market has grown enormously, and the demand for these companies to take full advantage of our system to improve their adoption rates is vast.
+
+
+# Use cases
+
+## Post Billing
+
+Let's assume a scenario that the customer is customer of a member-only business, and the business maintains the balance,
+
+1. The customer starts a transaction by selecting a vending machine in the app.
+2. The vending machine promotes the customer to make a selection.
+3. The customer selects the product on vending machine.
+4. The membership app and backend approves the transaction and records the transaction.
+5. The vending machine dispenses the product for the customer.
+6. The backend deducts the cost from customer's balance.
+
+
+## Reference Payment
+
+
+Let's assume a scenario that the customer is customer of a member-only business, and the business records customer's reference payment method,
+
+1. The customer starts a transaction by selecting a vending machine in the app.
+2. The vending machine promotes the customer to make a selection.
+3. The customer selects the product on vending machine.
+4. The membership app and backend tries the reference payment, and records the transaction (with optional approval from customer)
+5. The vending machine dispenses the product for the customer.
+
 
 
 # API
